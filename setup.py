@@ -39,7 +39,6 @@ setup(
         'django-mptt==0.5.2,==0.6',
         'django-sekizai>=0.7',
         'djangocms-admin-style',
-        'django-request-provider==1.0.2',
     ],
     tests_require=[
         'django-reversion==1.6.6',
