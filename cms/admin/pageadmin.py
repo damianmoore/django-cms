@@ -413,7 +413,7 @@ class PageAdmin(PlaceholderAdminMixin, ModelAdmin):
                 'ADMIN_MEDIA_URL': settings.STATIC_URL,
                 'can_change': obj.has_change_permission(request),
                 'can_change_permissions': obj.has_change_permissions_permission(request),
-                'current_site_id': settings.SITE_ID,
+                'current_site_id': Site.objects.get_current(),
             }
             context.update(extra_context or {})
             extra_context = self.update_language_tab_context(request, obj, context)

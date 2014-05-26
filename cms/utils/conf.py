@@ -6,6 +6,7 @@ import warnings
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
+from django.contrib.sites.models import Site
 from django.utils.translation import ugettext_lazy as _
 
 from cms import constants
@@ -213,19 +214,16 @@ def _ensure_languages_settings(languages):
 
 
 def get_languages():
-    if not isinstance(settings.SITE_ID, int_types):
-        raise ImproperlyConfigured(
-            "SITE_ID must be an integer"
-        )
+    site = Site.objects.get_current()
     if not settings.USE_I18N:
         return _ensure_languages_settings(
-            {settings.SITE_ID: [{'code': settings.LANGUAGE_CODE, 'name': settings.LANGUAGE_CODE}]})
+            {site.pk: [{'code': settings.LANGUAGE_CODE, 'name': settings.LANGUAGE_CODE}]})
     if not settings.LANGUAGE_CODE in dict(settings.LANGUAGES):
         raise ImproperlyConfigured(
                         'LANGUAGE_CODE "%s" must have a matching entry in LANGUAGES' % settings.LANGUAGE_CODE
                     )
     languages = getattr(settings, 'CMS_LANGUAGES', {
-        settings.SITE_ID: [{'code': code, 'name': _(name)} for code, name in settings.LANGUAGES]
+        site.pk: [{'code': code, 'name': _(name)} for code, name in settings.LANGUAGES]
     })
     if VERIFIED in languages:
         return languages
@@ -264,11 +262,10 @@ def get_cms_setting(name):
 
 
 def get_site_id(site):
-    from django.contrib.sites.models import Site
     if isinstance(site, Site):
         return site.id
     try:
         return int(site)
     except (TypeError, ValueError):
         pass
-    return settings.SITE_ID
+    return Site.objects.get_current()
