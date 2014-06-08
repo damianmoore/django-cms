@@ -248,9 +248,10 @@ def _cache_page(response):
 
 def _get_cache_key(request):
     #md5 key of current path
-    cache_key = "%s:%s" % (
+    cache_key = "%s:%d:%s" % (
         get_cms_setting("CACHE_PREFIX"),
-        hashlib.md5(iri_to_uri(str(settings.SITE_ID)+request.get_full_path()).encode('utf-8')).hexdigest()
+        settings.SITE_ID,
+        hashlib.md5(iri_to_uri(request.get_full_path()).encode('utf-8')).hexdigest()
     )
     if settings.USE_TZ:
         # The datetime module doesn't restrict the output of tzname().
